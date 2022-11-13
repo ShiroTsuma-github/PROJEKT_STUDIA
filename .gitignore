@@ -1,2 +1,6 @@
 env
 .history
+.vscode
+Tests/__pycache__
+Modules/__pycache__
+__pycache__
