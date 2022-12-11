@@ -43,24 +43,29 @@ class ChessBoard(WorkArea):
                  Yoffsets: 'tuple[float, float]' = (0.5, 0.5)) -> None:
         super().__init__(size, WindowSize, Xoffsets, Yoffsets)
         self.cellSize = self.PlayableArea[0] / 8
-        self.cellList = self.__generateCellList()
+        self.cellList, self.cellColors = self.__generateCellList()
 
     def __generateCellList(self):
         cells = []
+        colors = []
         for i in range(8):
             for j in range(8):
                 if (i + j) % 2 == 0:
-                    cells.append(pygame.Rect(
-                        (self.corners['lt'][0] + j * self.cellSize, self.corners['lt'][1] + i * self.cellSize),
-                        (self.cellSize, self.cellSize)))
-        return cells
+                    colors.append('f1')
+                else:
+                    colors.append('f2')
+                cells.append(pygame.Rect(
+                    (self.corners['lt'][0] + j * self.cellSize, self.corners['lt'][1] + i * self.cellSize),
+                    (self.cellSize, self.cellSize)))
+        return (cells, colors)
 
 
 class piece(pygame.sprite.Sprite):
-    def __init__(self, imgpath) -> None:
+    def __init__(self, imgpath, center) -> None:
         super().__init__()
         self.image = pygame.image.load(imgpath)
         self.rect = self.image.get_rect()
+        self.rect.center = center
 
 
 class Window():
@@ -71,6 +76,7 @@ class Window():
         self.board = ChessBoard((chessScale, chessScale), (self.sizeX, self.sizeY))
         self.boardSize = (self.board.getWidth(), self.board.getHeight())
         self.boardCorners = self.board.corners
+        self.pieces = pygame.sprite.Group()
 
     def start(self, boardColor, cellColor, backgroundColor):
         pygame.init()
@@ -80,19 +86,31 @@ class Window():
                          ((a.boardCorners['lt'][0] - 2, a.boardCorners['lt'][1] - 2),
                           (a.boardSize[0] + 4, a.boardSize[1] + 4)))
         pygame.draw.rect(a.screen, c.GetColor(boardColor), ((a.boardCorners['lt']), (a.boardSize)))
-        for i in self.board.cellList:
-            pygame.draw.rect(self.screen, c.GetColor(cellColor), i)
-        pygame.display.flip()
+        for poz, i in enumerate(self.board.cellList):
+            if self.board.cellColors[poz] == 'f1':
+                pygame.draw.rect(self.screen, c.GetColor(cellColor), i)
+        self.update()
 
     def resize(self, size: 'tuple[int, int]'):
         if not all([type(i) for i in size]):
             return
         self.screen = pygame.display.set_mode(size)
 
+    def update(self):
+        self.pieces.draw(self.screen)
+        pygame.display.flip()
+
+    def drawPieces(self):
+        for point in self.board.cellList:
+            d = piece('images\Chess_bdt60.png',point.center)
+            self.pieces.add(d)
+
 
 if __name__ == '__main__':
     a = Window((1000, 1000), 0.75)
     c = Colors()
     a.start('white', 'light green', 'light golden rod yellow')
+    a.drawPieces()
+    a.update()
     while True:
-        sleep(10)
+        sleep(5)
