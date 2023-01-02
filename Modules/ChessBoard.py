@@ -50,6 +50,8 @@ class ChessBoard():
         Args:
             positions (int): String of board positions. Length 64
         """
+        self.board = []
+        self.Pieces = pygame.sprite.Group()
         start_Pos = positions
         if len(positions) != 64:
             raise ValueError
@@ -109,19 +111,27 @@ class ChessBoard():
                     tempBoard.add_piece(Bishop(color, locate(fpos)))  # type: ignore
         self.ChessAIBoard = tempBoard
 
+    def ValidTurn(self, piece):
+        if piece.color == 0 and self.whiteMove is True:
+            self.whiteMove = False
+            return True
+        elif piece.color == 1 and self.whiteMove is False:
+            self.whiteMove = True
+            return True
+        return False
+
     def Move(self, startPos, endPos):
         start = self.ConvertPos(startPos[0], startPos[1])
         end = self.ConvertPos(endPos[0], endPos[1])
+        ans = False
         self.ConvertBoard()
-        print(self.ChessAIBoard)
         piece1 = self.ChessAIBoard.get_piece(locate(start))
-        piece2 = self.ChessAIBoard.get_piece(locate(end))
-        print(start, end)
-        print(piece1, piece2)
         if piece1 is None:
             return False
         ans = piece1.is_valid(locate(end), self.ChessAIBoard)
-        print(ans)
+        if ans and self.ValidTurn(piece1):
+            self.board[endPos[1]][endPos[0]] = self.board[startPos[1]][startPos[0]]
+            self.board[startPos[1]][startPos[0]] = '-'
         return ans
 
 
