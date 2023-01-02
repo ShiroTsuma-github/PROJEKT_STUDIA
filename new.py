@@ -1,48 +1,10 @@
 import pygame
 from Modules.Colors import Colors
-from Modules.ImageFix import ImageHandle
+from Modules.Piece import Piece
+from Modules.Screen import Screen
 
 
-class Piece(pygame.sprite.Sprite):
-    def __init__(self, imgpath, center, size) -> None:
-        super().__init__()
-        self.base = self.Fix(imgpath, size)
-        self.image = self.base.GetImage()
-        self.rect = pygame.Rect((0, 0), self.base.GetSize())
-        self.rect.center = center
 
-    def Fix(self, imgpath, size):
-        temp = ImageHandle(imgpath)
-        temp.resize(size / temp.GetSize()[0])
-        return temp
-
-
-class Screen():
-    def __init__(self, size) -> None:
-        self.size = size
-        pygame.init()
-        self.screen = pygame.display.set_mode((size, size))
-        self.clock = pygame.time.Clock()
-        self.screen.fill((255, 255, 255))
-        self.background = self._backgroundResize()
-        self.screen.blit(self.background.GetImage(), (0, 0))
-
-    def _backgroundResize(self):
-        temp = ImageHandle('images\\board.png')
-        temp.resize(self.size / temp.GetSize()[0])
-        return temp
-
-    def run(self):
-        run = True
-        while run:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
-            self.clock.tick(30)
-            pygame.display.flip()
-
-    def getSize(self):
-        return self.screen.get_size()
 
 
 class ChessBoard(Screen):
@@ -93,10 +55,14 @@ class ChessBoard(Screen):
         if len(positions) != 64:
             raise ValueError
         for poz, i in enumerate(self.Positions):
+            if poz % 8 == 0:
+                self.board.append([])
             if start_Pos[poz] == '-':
+                self.board[poz // 8].append(start_Pos[poz])
                 continue
             elif start_Pos[poz].lower() not in 'prnbqk':
                 raise ValueError(f"Incorrect figure [{start_Pos[poz]}]")
+            self.board[poz // 8].append(start_Pos[poz])
             p = f'{start_Pos[poz].lower()}{1 if start_Pos[poz].islower() else 2}'
             d = Piece(f'images\\{p}.png', i, self.size / 7)
             self.Pieces.add(d)
@@ -105,11 +71,20 @@ class ChessBoard(Screen):
         self.Pieces.draw(self.screen)
         pygame.display.flip()
 
+    def BoardToPos(self) -> str:
+        res = ''
+        for line in self.board:
+            for pos in line:
+                res += pos
+        return res
+
+
 if __name__ == '__main__':
     a = ChessBoard(1000)
     # a.GeneratePositions(debug=True)
     a.GeneratePieces('rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR')
     a.update()
+    print(a.board)
     a.run()
 
 # TODO: wygeneruj napodstawie startu tabele 8 x 8, ktora dla kazdej komorki bedzie 
