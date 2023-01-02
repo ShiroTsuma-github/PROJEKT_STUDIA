@@ -4,9 +4,6 @@ from Modules.Piece import Piece
 from Modules.Screen import Screen
 
 
-
-
-
 class ChessBoard(Screen):
     def __init__(self, size) -> None:
         super().__init__(size)

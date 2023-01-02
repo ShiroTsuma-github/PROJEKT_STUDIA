@@ -7,7 +7,7 @@ class ImageHandle():
         self.image = Image.open(imagePath)
         self.surface = pygame.image.fromstring(self.image.tobytes(), self.image.size, self.image.mode)
 
-    def resize(self, scale):
+    def resize(self, scale) -> None:
         width, height = self.surface.get_size()
         n_w = int(width * scale)
         n_h = int(height * scale)
