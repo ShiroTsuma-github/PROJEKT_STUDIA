@@ -1,9 +1,11 @@
 import pygame
 from .ImageFix import ImageHandle
+from .ChessBoard import ChessBoard
 
 
-class Screen():
+class Screen(ChessBoard):
     def __init__(self, size) -> None:
+        super().__init__(size)
         self.size = size
         pygame.init()
         self.screen = pygame.display.set_mode((size, size))
@@ -18,10 +20,13 @@ class Screen():
         return temp
 
     def run(self):
+        self.GeneratePieces('qqqqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR')
         run = True
+        self.Validate()
         sqSelected = ()
         clicks = []
         while run:
+            self.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -37,10 +42,13 @@ class Screen():
                     print(F'Y: {mouseY} - X: {mouseX}')
                     print(clicks)
                 if len(clicks) == 2:
-                    
-                    
+                    pass           
             self.clock.tick(30)
             pygame.display.flip()
 
     def getSize(self):
         return self.screen.get_size()
+
+    def update(self):
+        self.Pieces.draw(self.screen)
+        pygame.display.flip()
