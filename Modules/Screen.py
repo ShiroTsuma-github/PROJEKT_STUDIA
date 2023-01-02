@@ -19,10 +19,14 @@ class Screen(ChessBoard):
         temp.resize(self.size / temp.GetSize()[0])
         return temp
 
-    def run(self):
-        self.GeneratePieces('qqqqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR')
+    def run(self,
+            starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR',
+            debug=False):
+        self.GeneratePieces(starting_seq)
+        # if debug:
+        #     self.ConvertBoard()
+        #     print(self.ChessAIBoard)
         run = True
-        self.Validate()
         sqSelected = ()
         clicks = []
         while run:
@@ -37,12 +41,18 @@ class Screen(ChessBoard):
                     if sqSelected == (mouseY, mouseX):
                         sqSelected = ()
                         clicks = []
-                    sqSelected = (mouseY, mouseX)
-                    clicks.append(sqSelected)
-                    print(F'Y: {mouseY} - X: {mouseX}')
-                    print(clicks)
+                    else:
+                        sqSelected = (mouseX, mouseY)
+                    clicks.append(sqSelected) if sqSelected != () else 0
+                    if debug:
+                        print(F'Y: {mouseY} - X: {mouseX}')
+                        print(clicks)
                 if len(clicks) == 2:
-                    pass           
+                    if self.Move(clicks[0], clicks[1]):
+                        print("Valid Move")
+                    else:
+                        print("Invalid Move")
+                    clicks = []
             self.clock.tick(30)
             pygame.display.flip()
 

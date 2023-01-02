@@ -3,6 +3,7 @@ import pygame
 from chess import Board as cbo
 from chess import Pawn, Rook, Bishop, King, Queen, Knight, locate
 
+
 class ChessBoard():
     def __init__(self, size) -> None:
         self.size = size
@@ -12,6 +13,7 @@ class ChessBoard():
         self.whiteMove = True
         self.MoveLog = []
         self.board = []
+        self.ChessAIBoard = cbo(True)
 
     def GeneratePositions(self, debug=False) -> 'list[tuple[float, float]]':
         """Since board is taken as image instead of generating,
@@ -71,57 +73,61 @@ class ChessBoard():
                 res += pos
         return res
 
-    def Validate(self):
-        tempBoard = cbo(empty=True)
+    def ConvertPos(self, posY, posX) -> str:
         dictX = {0: 'a',
-                 1: 'b',
-                 2: 'c',
-                 3: 'd',
-                 4: 'e',
-                 5: 'f',
-                 6: 'g',
-                 7: 'h'}
+                    1: 'b',
+                    2: 'c',
+                    3: 'd',
+                    4: 'e',
+                    5: 'f',
+                    6: 'g',
+                    7: 'h'}
+        return f'{dictX.get(posY)}{8 - (posX)}'
+
+    def ConvertBoard(self):
+        tempBoard = cbo(empty=True)
         for i, line in enumerate(self.board):
             for j, pos in enumerate(line):
                 if pos == '-':
                     continue
                 if pos.islower():
-                    color = 0
-                else:
                     color = 1
-                fpos = f'{dictX.get(j)}{8 - (i)}'
+                else:
+                    color = 0
+                fpos = self.ConvertPos(j, i)
                 if pos.lower() == 'r':
-                    tempBoard.add_piece(Rook(color, locate(fpos)))
+                    tempBoard.add_piece(Rook(color, locate(fpos)))  # type: ignore
                 elif pos.lower() == 'p':
-                    tempBoard.add_piece(Pawn(color, locate(fpos)))
+                    tempBoard.add_piece(Pawn(color, locate(fpos)))  # type: ignore
                 elif pos.lower() == 'k':
-                    tempBoard.add_piece(King(color, locate(fpos)))
+                    tempBoard.add_piece(King(color, locate(fpos)))  # type: ignore
                 elif pos.lower() == 'q':
-                    tempBoard.add_piece(Queen(color, locate(fpos)))
+                    tempBoard.add_piece(Queen(color, locate(fpos)))  # type: ignore
                 elif pos.lower() == 'n':
-                    tempBoard.add_piece(Knight(color, locate(fpos)))
+                    tempBoard.add_piece(Knight(color, locate(fpos)))  # type: ignore
                 elif pos.lower() == 'b':
-                    tempBoard.add_piece(Bishop(color, locate(fpos)))
-        print(tempBoard)
-        print(self.board)
+                    tempBoard.add_piece(Bishop(color, locate(fpos)))  # type: ignore
+        self.ChessAIBoard = tempBoard
 
-    class Move():
-        def __init__(self, startPos, endPos, board) -> None:
-            pass
+    def Move(self, startPos, endPos):
+        start = self.ConvertPos(startPos[0], startPos[1])
+        end = self.ConvertPos(endPos[0], endPos[1])
+        self.ConvertBoard()
+        print(self.ChessAIBoard)
+        piece1 = self.ChessAIBoard.get_piece(locate(start))
+        piece2 = self.ChessAIBoard.get_piece(locate(end))
+        print(start, end)
+        print(piece1, piece2)
+        if piece1 is None:
+            return False
+        ans = piece1.is_valid(locate(end), self.ChessAIBoard)
+        print(ans)
+        return ans
 
 
 """
-     Adds piece on board at given position.
-        >>> board = Board(empty=True)
-        >>> board.add_piece(Pawn(WHITE, locate("d4")))
-
-[[wRa1, wBb1, wNc1, wQd1, wKe1, wNf1, wBg1, wRh1],
- [wPa2, wPb2, wPc2, wPd2, wPe2, wPf2, wPg2, wPh2],
- [None, None, None, None, None, None, None, None],
- [None, None, None, None, None, None, None, None],
- [None, None, None, None, None, None, None, None],
- [None, None, None, None, None, None, None, None],
- [bPa7, bPb7, bPc7, bPd7, bPe7, bPf7, bPg7, bPh7],
- [bRa8, bBb8, bNc8, bQd8, bKe8, bNf8, bBg8, bRh8]
- ]
+ >>> pawn3 = board.get_piece(locate("c7"))
+        >>> pawn1.is_valid(locate("d3"), board) # Advance white pawn
+        True
+        >>> pawn1.is_valid(locate("d4"), board)
 """
