@@ -75,6 +75,9 @@ class ChessBoard():
                 res += pos
         return res
 
+    def Score(self):
+        return (self.ChessAIBoard.compute_score(0), self.ChessAIBoard.compute_score(1))
+
     def ConvertPos(self, posY, posX) -> str:
         dictX = {0: 'a',
                     1: 'b',
@@ -134,10 +137,17 @@ class ChessBoard():
             self.board[startPos[1]][startPos[0]] = '-'
         return ans
 
-
 """
- >>> pawn3 = board.get_piece(locate("c7"))
-        >>> pawn1.is_valid(locate("d3"), board) # Advance white pawn
-        True
-        >>> pawn1.is_valid(locate("d4"), board)
+    >>> bishop = board.get_piece(locate("c1"))
+    >>> bishop.position
+    c1
+    >>> bishop.name
+    'bishop'
+    >>> bishop = board.move_piece(bishop, locate("f6"))
+    >>> bishop.position
+    f6
+    >>> board.get_piece(locate("f6")) is bishop
+    True
+    >>> board.get_piece(locate("c1")) is None
+    True
 """
