@@ -170,7 +170,7 @@ class Colors():
             "white": ((255, 255, 255), "#FFFFFF")
         }
 
-    def GetColor(self, name: str, rgb: bool = True) -> Union[str, None, 'tuple[int, int, int]']:
+    def GetColor(self, name: str, rgb: bool = True) -> Union[str, 'tuple[int, int, int]']:
         """Returns value of color based on `rgb=`.
         If True returns RGB else HEX.
 
@@ -189,8 +189,11 @@ class Colors():
         >>> Class.GetColor('orange', rgb=False)
         '#FFA500'
         """
-        return self.__BaseColors.get(name, (None, None))[0]\
-            if rgb else self.__BaseColors.get(name, (None, None))[1]
+        ans = self.__BaseColors.get(name)
+        if ans is None:
+            raise ValueError(f"Color '{name}' is not in list")
+        if ans:
+            return ans[0] if rgb else ans[1]
 
     @staticmethod
     def __IsCorrectType(color: Union[str, 'tuple[int, int, int]'], _type: str) -> bool:

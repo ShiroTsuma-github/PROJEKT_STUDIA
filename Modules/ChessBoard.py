@@ -1,5 +1,6 @@
 from .Piece import Piece
 import pygame
+from typing import Union
 from chess import Board as cbo
 from chess import Pawn, Rook, Bishop, King, Queen, Knight, locate
 
@@ -15,6 +16,8 @@ class ChessBoard():
         self.board = []
         self.ChessAIBoard = cbo(True)
         self.check = False
+        self.checkSide = [False, False]
+        self.debug = False
 
     def GeneratePositions(self, debug=False) -> 'list[tuple[float, float]]':
         """Since board is taken as image instead of generating,
@@ -90,6 +93,14 @@ class ChessBoard():
                     7: 'h'}
         return f'{dictX.get(posY)}{8 - (posX)}'
 
+    def IndexOfPiece(self, piece: str) -> Union["tuple[int, int]", None]:
+        for i, x in enumerate(self.board):
+            try:
+                return (i, x.index(piece))
+            except ValueError:
+                pass
+        return None
+
     def ConvertBoard(self):
         tempBoard = cbo(empty=True)
         for i, line in enumerate(self.board):
@@ -137,7 +148,9 @@ class ChessBoard():
         if ans:
             self.ChessAIBoard.move_piece(piece1, locate(end))
             ans = not self.ChessAIBoard.in_check(0 if self.whiteMove else 1)
-            self.check = ans and self.ChessAIBoard.in_check(1 if self.whiteMove else 0)
+        self.checkSide[0] = self.ChessAIBoard.in_check(0)
+        self.checkSide[1] = self.ChessAIBoard.in_check(1)
+        self.check = any(self.checkSide)
         if ans and self.ValidTurn(piece1):
             self.board[endPos[1]][endPos[0]] = self.board[startPos[1]][startPos[0]]
             self.board[startPos[1]][startPos[0]] = '-'

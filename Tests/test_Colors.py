@@ -11,8 +11,11 @@ c = Colors()
 def test_GetColor():
     assert c.GetColor('black') == (0, 0, 0)
     assert c.GetColor('black', rgb=False) == '#000000'
-    assert c.GetColor('asdadasdas') is None
-    assert c.GetColor('asdadasdas', rgb=False) is None
+    with pytest.raises(ValueError) as wi:
+        c.GetColor('asdas')
+    assert "Color 'asdas'" in str(wi) 
+    with pytest.raises(ValueError) as wi:
+        c.GetColor('asdadasdas', rgb=False) is None
 
 
 def test_repr():

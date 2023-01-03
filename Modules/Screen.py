@@ -9,6 +9,7 @@ class Screen(ChessBoard):
         super().__init__(size)
         self.size = size
         pygame.init()
+        self.ColorMaster = Colors()
         self.screen = pygame.display.set_mode((size + size * 0.12, size))
         self.clock = pygame.time.Clock()
         self.background = self._backgroundResize()
@@ -20,38 +21,55 @@ class Screen(ChessBoard):
         return temp
 
     def _background(self):
-        self.screen.fill((255, 255, 255))
+        self.screen.fill(self.ColorMaster.GetColor('alice blue'))
         self.screen.blit(self.background.GetImage(), (0, 0))
 
     def BoardMarks(self):
-        t = Colors()
-        text = pygame.font.SysFont('arial', int(self.size * 10 / 500))
+        text = pygame.font.SysFont('calibri', int(self.size * 10 / 500))
         for i, pos in enumerate(self.Positions):
-            tiptextsurface = text.render(self.ConvertPos(i % 8, i // 8).upper(), True, t.GetColor('black'))
+            tiptextsurface = text.render(self.ConvertPos(i % 8, i // 8).upper(),
+                                         True,
+                                         self.ColorMaster.GetColor('black'))
             self.screen.blit(tiptextsurface, (pos[0] - self.CellSize / 2.2, pos[1] + self.CellSize / 3))
 
     def CurrentSelect(self, coords):
-        t = Colors()
-        print(coords)
-        pos = self.Positions[coords[0] + coords[1] * 8 ]
-        pygame.draw.circle(self.screen, t.GetColor("red"), pos, self.CellSize * 0.4, width=3)
+        if self.debug:
+            print(coords)
+        color = self.ColorMaster.GetColor("green") if self.whiteMove\
+            else self.ColorMaster.GetColor("blue")
+        pos = self.Positions[coords[0] + coords[1] * 8]
+        pygame.draw.circle(self.screen,
+                           color,
+                           pos,
+                           self.CellSize * 0.4,
+                           width=3)
         print(pos)
 
     def DisplayScore(self):
-        t = Colors()
-        text = pygame.font.SysFont('arial', int(self.size * 22 / 500))
+        text = pygame.font.SysFont('calibri', int(self.size * 22 / 500))
         white, black = self.Score()
-        whitetextsurface = text.render(str(white), True, t.GetColor('black'))
-        blacktextsurface = text.render(str(black), True, t.GetColor('black'))
+        whitetextsurface = text.render(str(white), True, self.ColorMaster.GetColor('black'))
+        blacktextsurface = text.render(str(black), True, self.ColorMaster.GetColor('black'))
         self.screen.blit(whitetextsurface, (self.size * 1.035, self.size * 0.85))
         self.screen.blit(blacktextsurface, (self.size * 1.035, self.size * 0.15))
 
     def DisplayCheck(self):
-        t = Colors()
-        text = pygame.font.SysFont('arial', int(self.size * 23 / 500))
+        p = None
+        text = pygame.font.SysFont('calibri', int(self.size * 23 / 500))
         print(self.check)
-        textsurface = text.render('Check' if self.check else '', True, t.GetColor('black'))
+        textsurface = text.render('Check' if self.check else '', True, self.ColorMaster.GetColor('black'))
         self.screen.blit(textsurface, (self.size * 1.0, self.size * 0.5))
+        if self.checkSide[0]:
+            p = self.IndexOfPiece('K')
+        elif self.checkSide[1]:
+            p = self.IndexOfPiece('k')
+        if p:
+            pos = self.Positions[p[0] * 8 + p[1]]
+            pygame.draw.circle(self.screen,
+                               self.ColorMaster.GetColor("red"),
+                               pos,
+                               self.CellSize * 0.4,
+                               width=3)
 
     def run(self,
             starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR',
