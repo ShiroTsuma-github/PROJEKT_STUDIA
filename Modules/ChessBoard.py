@@ -14,6 +14,7 @@ class ChessBoard():
         self.MoveLog = []
         self.board = []
         self.ChessAIBoard = cbo(True)
+        self.check = False
 
     def GeneratePositions(self, debug=False) -> 'list[tuple[float, float]]':
         """Since board is taken as image instead of generating,
@@ -131,7 +132,12 @@ class ChessBoard():
         piece1 = self.ChessAIBoard.get_piece(locate(start))
         if piece1 is None:
             return False
+
         ans = piece1.is_valid(locate(end), self.ChessAIBoard)
+        if ans:
+            self.ChessAIBoard.move_piece(piece1, locate(end))
+            ans = not self.ChessAIBoard.in_check(0 if self.whiteMove else 1)
+            self.check = ans and self.ChessAIBoard.in_check(1 if self.whiteMove else 0)
         if ans and self.ValidTurn(piece1):
             self.board[endPos[1]][endPos[0]] = self.board[startPos[1]][startPos[0]]
             self.board[startPos[1]][startPos[0]] = '-'

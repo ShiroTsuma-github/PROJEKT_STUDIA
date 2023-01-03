@@ -9,7 +9,7 @@ class Screen(ChessBoard):
         super().__init__(size)
         self.size = size
         pygame.init()
-        self.screen = pygame.display.set_mode((size + size * 0.1, size))
+        self.screen = pygame.display.set_mode((size + size * 0.12, size))
         self.clock = pygame.time.Clock()
         self.background = self._backgroundResize()
         self._background()
@@ -46,11 +46,20 @@ class Screen(ChessBoard):
         self.screen.blit(whitetextsurface, (self.size * 1.035, self.size * 0.85))
         self.screen.blit(blacktextsurface, (self.size * 1.035, self.size * 0.15))
 
+    def DisplayCheck(self):
+        t = Colors()
+        text = pygame.font.SysFont('arial', int(self.size * 23 / 500))
+        print(self.check)
+        textsurface = text.render('Check' if self.check else '', True, t.GetColor('black'))
+        self.screen.blit(textsurface, (self.size * 1.0, self.size * 0.5))
+
     def run(self,
             starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR',
-            debug=False):
+            debug=False,
+            whiteMove=True):
         self.GeneratePieces(starting_seq)
         self.update()
+        self.whiteMove = whiteMove
         run = True
         sqSelected = ()
         clicks = []
@@ -62,7 +71,7 @@ class Screen(ChessBoard):
                     mousePos = pygame.mouse.get_pos()
                     mouseX = int(mousePos[0] // (self.size / 8))
                     mouseY = int(mousePos[1] // (self.size / 8))
-                    if sqSelected == (mouseY, mouseX):
+                    if sqSelected == (mouseX, mouseY):
                         sqSelected = ()
                         clicks = []
                     sqSelected = (mouseX, mouseY)
@@ -92,4 +101,5 @@ class Screen(ChessBoard):
         self.BoardMarks()
         self.Pieces.draw(self.screen)
         self.DisplayScore()
+        self.DisplayCheck()
         pygame.display.flip()

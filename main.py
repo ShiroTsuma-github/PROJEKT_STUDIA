@@ -114,3 +114,19 @@ if __name__ == '__main__':
     a.update()
     while True:
         sleep(5)
+
+
+
+    def Move(self, startPos, endPos):
+        start = self.ConvertPos(startPos[0], startPos[1])
+        end = self.ConvertPos(endPos[0], endPos[1])
+        ans = False
+        self.ConvertBoard()
+        piece1 = self.ChessAIBoard.get_piece(locate(start))
+        if piece1 is None:
+            return False
+        ans = piece1.is_valid(locate(end), self.ChessAIBoard)
+        if ans and self.ValidTurn(piece1):
+            self.board[endPos[1]][endPos[0]] = self.board[startPos[1]][startPos[0]]
+            self.board[startPos[1]][startPos[0]] = '-'
+        return ans
