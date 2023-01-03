@@ -1,6 +1,7 @@
 import pygame
 from .ImageFix import ImageHandle
 from .ChessBoard import ChessBoard
+from .Colors import Colors
 
 
 class Screen(ChessBoard):
@@ -8,7 +9,7 @@ class Screen(ChessBoard):
         super().__init__(size)
         self.size = size
         pygame.init()
-        self.screen = pygame.display.set_mode((size, size))
+        self.screen = pygame.display.set_mode((size + size * 0.1, size))
         self.clock = pygame.time.Clock()
         self.background = self._backgroundResize()
         self._background()
@@ -22,15 +23,38 @@ class Screen(ChessBoard):
         self.screen.fill((255, 255, 255))
         self.screen.blit(self.background.GetImage(), (0, 0))
 
+    def BoardMarks(self):
+        t = Colors()
+        text = pygame.font.SysFont('arial', int(self.size * 10 / 500))
+        for i, pos in enumerate(self.Positions):
+            tiptextsurface = text.render(self.ConvertPos(i % 8, i // 8).upper(), True, t.GetColor('black'))
+            self.screen.blit(tiptextsurface, (pos[0] - self.CellSize / 2.2, pos[1] + self.CellSize / 3))
+
+    def CurrentSelect(self, coords):
+        t = Colors()
+        print(coords)
+        pos = self.Positions[coords[0] + coords[1] * 8 ]
+        pygame.draw.circle(self.screen, t.GetColor("red"), pos, self.CellSize * 0.4, width=3)
+        print(pos)
+
+    def DisplayScore(self):
+        t = Colors()
+        text = pygame.font.SysFont('arial', int(self.size * 22 / 500))
+        white, black = self.Score()
+        whitetextsurface = text.render(str(white), True, t.GetColor('black'))
+        blacktextsurface = text.render(str(black), True, t.GetColor('black'))
+        self.screen.blit(whitetextsurface, (self.size * 1.035, self.size * 0.85))
+        self.screen.blit(blacktextsurface, (self.size * 1.035, self.size * 0.15))
+
     def run(self,
             starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR',
             debug=False):
         self.GeneratePieces(starting_seq)
+        self.update()
         run = True
         sqSelected = ()
         clicks = []
         while run:
-            self.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -46,16 +70,17 @@ class Screen(ChessBoard):
                     if debug:
                         print(F'Y: {mouseY} - X: {mouseX}')
                         print(clicks)
+                    if len(clicks) == 1:
+                        self.CurrentSelect(clicks[0])
                 if len(clicks) == 2:
                     if self.Move(clicks[0], clicks[1]):
                         self.GeneratePieces(self.BoardToPos())
-                        self._background()
-                        self.update()
                         if debug:
                             print("Valid Move")
                             self.ConvertBoard()
                             print(self.ChessAIBoard)
                     clicks = []
+                    self.update()
             self.clock.tick(60)
             pygame.display.flip()
 
@@ -63,5 +88,8 @@ class Screen(ChessBoard):
         return self.screen.get_size()
 
     def update(self):
+        self._background()
+        self.BoardMarks()
         self.Pieces.draw(self.screen)
+        self.DisplayScore()
         pygame.display.flip()
