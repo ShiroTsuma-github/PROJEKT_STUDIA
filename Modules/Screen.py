@@ -8,9 +8,21 @@ class Screen(ChessBoard):
     def __init__(self, size) -> None:
         super().__init__(size)
         self.size = size
+        self.truesize = size + size * 0.12
         pygame.init()
         self.ColorMaster = Colors()
-        self.screen = pygame.display.set_mode((size + size * 0.12, size))
+        self.objectcolors = {
+            'BLACK': 0,
+            'WHITE': 1,
+            'WSIDE': self.ColorMaster.GetColor('green'),
+            'BSIDE': self.ColorMaster.GetColor('blue'),
+            'MARKS': self.ColorMaster.GetColor('black'),
+            'BACKGROUND': self.ColorMaster.GetColor('alice blue'),
+            'TEXT': self.ColorMaster.GetColor('black'),
+            'CHECK': self.ColorMaster.GetColor('red'),
+            'CHECKM-B': self.ColorMaster.GetColor('light gray')
+        }
+        self.screen = pygame.display.set_mode((self.truesize, size))
         self.clock = pygame.time.Clock()
         self.background = self._backgroundResize()
         self._background()
@@ -21,7 +33,7 @@ class Screen(ChessBoard):
         return temp
 
     def _background(self):
-        self.screen.fill(self.ColorMaster.GetColor('alice blue'))
+        self.screen.fill(self.objectcolors['BACKGROUND'])
         self.screen.blit(self.background.GetImage(), (0, 0))
 
     def GeneratePositions(self, debug=False) -> 'list[tuple[float, float]]':
@@ -56,14 +68,14 @@ class Screen(ChessBoard):
         for i, pos in enumerate(self.Positions):
             tiptextsurface = text.render(self.ConvertToAiPos(i % 8, i // 8).upper(),
                                          True,
-                                         self.ColorMaster.GetColor('black'))
+                                         self.objectcolors['MARKS'])
             self.screen.blit(tiptextsurface, (pos[0] - self.CellSize / 2.2, pos[1] + self.CellSize / 3))
 
     def CurrentSelect(self, coords):
         if self.debug:
             print(f'Chessboard Coordinates : {coords}')
-        color = self.ColorMaster.GetColor("green") if self.whiteMove\
-            else self.ColorMaster.GetColor("blue")
+        color = self.objectcolors['WSIDE'] if self.whiteMove\
+            else self.objectcolors['BSIDE']
         pos = self.Positions[coords[0] + coords[1] * 8]
         pygame.draw.circle(self.screen,
                            color,
@@ -76,8 +88,8 @@ class Screen(ChessBoard):
     def DisplayScore(self):
         text = pygame.font.SysFont('calibri', int(self.size * 22 / 500))
         white, black = self.Score()
-        whitetextsurface = text.render(str(white), True, self.ColorMaster.GetColor('black'))
-        blacktextsurface = text.render(str(black), True, self.ColorMaster.GetColor('black'))
+        whitetextsurface = text.render(str(white), True, self.objectcolors['TEXT'])
+        blacktextsurface = text.render(str(black), True, self.objectcolors['TEXT'])
         self.screen.blit(whitetextsurface, (self.size * 1.035, self.size * 0.85))
         self.screen.blit(blacktextsurface, (self.size * 1.035, self.size * 0.15))
 
@@ -86,7 +98,7 @@ class Screen(ChessBoard):
         text = pygame.font.SysFont('calibri', int(self.size * 23 / 500))
         if self.debug:
             print(self.check)
-        textsurface = text.render('Check' if self.check else '', True, self.ColorMaster.GetColor('black'))
+        textsurface = text.render('Check' if self.check else '', True, self.objectcolors['TEXT'])
         self.screen.blit(textsurface, (self.size * 1.0, self.size * 0.5))
         if self.checkSide[0]:
             p = self.IndexOfPiece('K')
@@ -95,15 +107,28 @@ class Screen(ChessBoard):
         if p:
             pos = self.Positions[p[0] * 8 + p[1]]
             pygame.draw.circle(self.screen,
-                               self.ColorMaster.GetColor("red"),
+                               self.objectcolors['CHECK'],
                                pos,
                                self.CellSize * 0.4,
                                width=3)
 
+    def DisplayCheckMate(self):
+        text = pygame.font.SysFont('calibri', int(self.size * 50 / 500))
+        textsurface = text.render('Checkmate',
+                                  True,
+                                  self.objectcolors['TEXT'])
+        textarea = pygame.Surface(textsurface.get_size())
+        textarea.fill(self.objectcolors['CHECKM-B'])
+        x, y = textarea.get_size()
+        textarea.blit(textsurface, (0, 0))
+        self.screen.blit(textarea,
+                         ((self.size - textarea.get_width()) // 2,
+                          (self.size - textarea.get_height()) // 2))
+
     def DisplayAvailable(self, position):
         coords = self.ConvertToDisp(str(position))
         pos = self.Positions[coords[0] + coords[1] * 8]
-        color = self.ColorMaster.GetColor('green' if self.whiteMove else 'blue') 
+        color = self.objectcolors['WSIDE'] if self.whiteMove else self.objectcolors['BSIDE']
         pygame.draw.circle(self.screen,
                            color,
                            pos,
@@ -131,13 +156,19 @@ class Screen(ChessBoard):
                         sqSelected = ()
                         clicks = []
                     sqSelected = (mouseX, mouseY)
+                    if any([i >= 8 for i in sqSelected]):
+                        sqSelected = ()
                     clicks.append(sqSelected) if sqSelected != () else 0
                     if self.debug:
                         print(F'Y: {mouseY} - X: {mouseX}')
                         print(clicks)
                     if len(clicks) == 1:
                         self.CurrentSelect(clicks[0])
-                        for pos in self.availableMoves(clicks[0]):
+                        moves, all_moves = self.availableMoves(clicks[0])
+                        if len(all_moves) == 0:
+                            self.checkmate = True
+                            continue
+                        for pos in moves:
                             self.DisplayAvailable(pos)
                 if len(clicks) == 2:
                     if self.Move(clicks[0], clicks[1]):
@@ -160,4 +191,6 @@ class Screen(ChessBoard):
         self.Pieces.draw(self.screen)
         self.DisplayScore()
         self.DisplayCheck()
+        if self.checkmate:
+            self.DisplayCheckMate()
         pygame.display.flip()

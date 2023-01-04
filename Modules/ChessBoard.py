@@ -16,6 +16,7 @@ class ChessBoard():
         self.board = []
         self.ChessAIBoard = cbo(empty=True)
         self.check = False
+        self.checkmate = False
         self.checkSide = [False, False]
         self.additionalinfo = [[0, 0, 0], [0, 0, 0]]
         self.debug = False
@@ -35,7 +36,7 @@ class ChessBoard():
                 pos_moves.append(where_to)
         if self.debug:
             print(pos_moves)
-        return pos_moves
+        return (pos_moves, all_moves)
 
     def GeneratePieces(self, positions: str):
         """Based on `positions` recreates the board. `positions`  is string of length 64.
@@ -145,7 +146,6 @@ class ChessBoard():
         piece1 = self.ChessAIBoard.get_piece(locate(start))
         if piece1 is None:
             return False
-
         ans = piece1.is_valid(locate(end), self.ChessAIBoard)
         if ans:
             self.ChessAIBoard.move_piece(piece1, locate(end))
@@ -156,6 +156,10 @@ class ChessBoard():
         if ans and self.ValidTurn(piece1):
             self.board[endPos[1]][endPos[0]] = self.board[startPos[1]][startPos[0]]
             self.board[startPos[1]][startPos[0]] = '-'
+        self.ConvertBoard()
+        self.checkSide[0] = self.ChessAIBoard.in_check(0)
+        self.checkSide[1] = self.ChessAIBoard.in_check(1)
+        self.check = any(self.checkSide)
         return ans
 
 """
