@@ -24,17 +24,44 @@ class Screen(ChessBoard):
         self.screen.fill(self.ColorMaster.GetColor('alice blue'))
         self.screen.blit(self.background.GetImage(), (0, 0))
 
+    def GeneratePositions(self, debug=False) -> 'list[tuple[float, float]]':
+        """Since board is taken as image instead of generating,
+        there is a need for general positions where to place figures.
+        `debug` allows for visualising positions.
+
+        Args:
+            debug (bool, optional): If visualization is needed. Defaults to False.
+
+        Returns:
+            list[tuple[float, float]]: Positions of centers of cells.
+        """
+        cellWidth = self.CellSize
+        debugSize = (15, 15)
+        positions = []
+        for i in range(8):
+            for j in range(8):
+                cellX = 5 + cellWidth * j + cellWidth / 2 - j
+                cellY = cellWidth * i + cellWidth / 2 - i
+                rect = pygame.Rect((0, 0), debugSize)
+                positions.append((cellX, cellY))
+                if debug:
+                    rect.center = (cellX, cellY)
+                    pygame.draw.rect(self.screen,
+                                     (i * 11, j * 11, abs(j - i) * 15),
+                                     rect)
+        return positions
+
     def BoardMarks(self):
         text = pygame.font.SysFont('calibri', int(self.size * 10 / 500))
         for i, pos in enumerate(self.Positions):
-            tiptextsurface = text.render(self.ConvertPos(i % 8, i // 8).upper(),
+            tiptextsurface = text.render(self.ConvertToAiPos(i % 8, i // 8).upper(),
                                          True,
                                          self.ColorMaster.GetColor('black'))
             self.screen.blit(tiptextsurface, (pos[0] - self.CellSize / 2.2, pos[1] + self.CellSize / 3))
 
     def CurrentSelect(self, coords):
         if self.debug:
-            print(coords)
+            print(f'Chessboard Coordinates : {coords}')
         color = self.ColorMaster.GetColor("green") if self.whiteMove\
             else self.ColorMaster.GetColor("blue")
         pos = self.Positions[coords[0] + coords[1] * 8]
@@ -43,7 +70,8 @@ class Screen(ChessBoard):
                            pos,
                            self.CellSize * 0.4,
                            width=3)
-        print(pos)
+        if self.debug:
+            print(f'Position of cursor : {pos}')
 
     def DisplayScore(self):
         text = pygame.font.SysFont('calibri', int(self.size * 22 / 500))
@@ -56,7 +84,8 @@ class Screen(ChessBoard):
     def DisplayCheck(self):
         p = None
         text = pygame.font.SysFont('calibri', int(self.size * 23 / 500))
-        print(self.check)
+        if self.debug:
+            print(self.check)
         textsurface = text.render('Check' if self.check else '', True, self.ColorMaster.GetColor('black'))
         self.screen.blit(textsurface, (self.size * 1.0, self.size * 0.5))
         if self.checkSide[0]:
@@ -71,9 +100,18 @@ class Screen(ChessBoard):
                                self.CellSize * 0.4,
                                width=3)
 
+    def DisplayAvailable(self, position):
+        coords = self.ConvertToDisp(str(position))
+        pos = self.Positions[coords[0] + coords[1] * 8]
+        color = self.ColorMaster.GetColor('green' if self.whiteMove else 'blue') 
+        pygame.draw.circle(self.screen,
+                           color,
+                           pos,
+                           self.CellSize * 0.1,
+                           width=3)
+
     def run(self,
             starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR',
-            debug=False,
             whiteMove=True):
         self.GeneratePieces(starting_seq)
         self.update()
@@ -94,15 +132,17 @@ class Screen(ChessBoard):
                         clicks = []
                     sqSelected = (mouseX, mouseY)
                     clicks.append(sqSelected) if sqSelected != () else 0
-                    if debug:
+                    if self.debug:
                         print(F'Y: {mouseY} - X: {mouseX}')
                         print(clicks)
                     if len(clicks) == 1:
                         self.CurrentSelect(clicks[0])
+                        for pos in self.availableMoves(clicks[0]):
+                            self.DisplayAvailable(pos)
                 if len(clicks) == 2:
                     if self.Move(clicks[0], clicks[1]):
                         self.GeneratePieces(self.BoardToPos())
-                        if debug:
+                        if self.debug:
                             print("Valid Move")
                             self.ConvertBoard()
                             print(self.ChessAIBoard)

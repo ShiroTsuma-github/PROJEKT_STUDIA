@@ -14,37 +14,28 @@ class ChessBoard():
         self.whiteMove = True
         self.MoveLog = []
         self.board = []
-        self.ChessAIBoard = cbo(True)
+        self.ChessAIBoard = cbo(empty=True)
         self.check = False
         self.checkSide = [False, False]
+        self.additionalinfo = [[0, 0, 0], [0, 0, 0]]
         self.debug = False
 
-    def GeneratePositions(self, debug=False) -> 'list[tuple[float, float]]':
-        """Since board is taken as image instead of generating,
-        there is a need for general positions where to place figures.
-        `debug` allows for visualising positions.
-
-        Args:
-            debug (bool, optional): If visualization is needed. Defaults to False.
-
-        Returns:
-            list[tuple[float, float]]: Positions of centers of cells.
-        """
-        cellWidth = self.CellSize
-        debugSize = (15, 15)
-        positions = []
-        for i in range(8):
-            for j in range(8):
-                cellX = 5 + cellWidth * j + cellWidth / 2 - j
-                cellY = cellWidth * i + cellWidth / 2 - i
-                rect = pygame.Rect((0, 0), debugSize)
-                positions.append((cellX, cellY))
-                if debug:
-                    rect.center = (cellX, cellY)
-                    pygame.draw.rect(self.screen,
-                                     (i * 11, j * 11, abs(j - i) * 15),
-                                     rect)
-        return positions
+    def availableMoves(self, position):
+        self.ConvertBoard()
+        all_moves = list(self.ChessAIBoard.get_moves(0 if self.whiteMove else 1))
+        Cposition = self.ConvertToAiPos(position[0], position[1])
+        pos_moves = []
+        for pos in all_moves:
+            move = pos[0]
+            where_to = move.position
+            who = str(move.piece)[-2:]
+            if self.debug:
+                print(who, where_to)
+            if who == Cposition:
+                pos_moves.append(where_to)
+        if self.debug:
+            print(pos_moves)
+        return pos_moves
 
     def GeneratePieces(self, positions: str):
         """Based on `positions` recreates the board. `positions`  is string of length 64.
@@ -82,7 +73,7 @@ class ChessBoard():
     def Score(self):
         return (self.ChessAIBoard.compute_score(0), self.ChessAIBoard.compute_score(1))
 
-    def ConvertPos(self, posY, posX) -> str:
+    def ConvertToAiPos(self, posY, posX) -> str:
         dictX = {0: 'a',
                     1: 'b',
                     2: 'c',
@@ -92,6 +83,17 @@ class ChessBoard():
                     6: 'g',
                     7: 'h'}
         return f'{dictX.get(posY)}{8 - (posX)}'
+
+    def ConvertToDisp(self, pos):
+        dictX = {'a': 0,
+                 'b': 1,
+                 'c': 2,
+                 'd': 3,
+                 'e': 4,
+                 'f': 5,
+                 'g': 6,
+                 'h': 7}
+        return (dictX.get(pos[0]), abs(int(pos[1]) - 8))
 
     def IndexOfPiece(self, piece: str) -> Union["tuple[int, int]", None]:
         for i, x in enumerate(self.board):
@@ -111,7 +113,7 @@ class ChessBoard():
                     color = 1
                 else:
                     color = 0
-                fpos = self.ConvertPos(j, i)
+                fpos = self.ConvertToAiPos(j, i)
                 if pos.lower() == 'r':
                     tempBoard.add_piece(Rook(color, locate(fpos)))  # type: ignore
                 elif pos.lower() == 'p':
@@ -136,8 +138,8 @@ class ChessBoard():
         return False
 
     def Move(self, startPos, endPos):
-        start = self.ConvertPos(startPos[0], startPos[1])
-        end = self.ConvertPos(endPos[0], endPos[1])
+        start = self.ConvertToAiPos(startPos[0], startPos[1])
+        end = self.ConvertToAiPos(endPos[0], endPos[1])
         ans = False
         self.ConvertBoard()
         piece1 = self.ChessAIBoard.get_piece(locate(start))
