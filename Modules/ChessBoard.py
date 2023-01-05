@@ -156,6 +156,11 @@ class ChessBoard():
         if ans and self.ValidTurn(piece1):
             self.board[endPos[1]][endPos[0]] = self.board[startPos[1]][startPos[0]]
             self.board[startPos[1]][startPos[0]] = '-'
+        if piece1.name == 'pawn':
+            if (endPos[1] == 8 and piece1.color == 1):
+                self.board[endPos[1]][endPos[0]] = 'q'
+            elif (endPos[1] == 0 and piece1.color == 0):
+                self.board[endPos[1]][endPos[0]] = 'Q'
         self.ConvertBoard()
         self.checkSide[0] = self.ChessAIBoard.in_check(0)
         self.checkSide[1] = self.ChessAIBoard.in_check(1)
