@@ -3,6 +3,7 @@ from Modules.Screen import Screen
 play = True
 while play:
     game = Screen(500)
+    game.debug = True
     play = game.run(starting_seq='rnbqkbnr----------------------------------------PPPPPPPPRNBQKBNR', whiteMove=True)
 
 

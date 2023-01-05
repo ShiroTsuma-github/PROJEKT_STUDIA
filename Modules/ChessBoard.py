@@ -9,7 +9,6 @@ class ChessBoard():
     def __init__(self, size) -> None:
         self.size = size
         self.CellSize = self.size / 8
-        self.Positions = self.GeneratePositions()
         self.Pieces = pygame.sprite.Group()
         self.whiteMove = True
         self.MoveLog = []
@@ -83,6 +82,8 @@ class ChessBoard():
                     5: 'f',
                     6: 'g',
                     7: 'h'}
+        if posX > 8 or posY > 7:
+            raise ValueError('Out of bound of board.')
         return f'{dictX.get(posY)}{8 - (posX)}'
 
     def ConvertToDisp(self, pos):
@@ -94,6 +95,8 @@ class ChessBoard():
                  'f': 5,
                  'g': 6,
                  'h': 7}
+        if pos[0] not in 'abcdefgh' or pos[1] not in '012345678':
+            raise ValueError('Incorrect field.')
         return (dictX.get(pos[0]), abs(int(pos[1]) - 8))
 
     def IndexOfPiece(self, piece: str) -> Union["tuple[int, int]", None]:

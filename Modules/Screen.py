@@ -10,6 +10,7 @@ class Screen(ChessBoard):
         self.size = size
         self.truesize = size + size * 0.12
         pygame.init()
+        self.Positions = self.GeneratePositions()
         self.ColorMaster = Colors()
         self.objectcolors = {
             'BLACK': 0,
