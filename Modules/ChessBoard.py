@@ -3,11 +3,13 @@ import pygame
 from typing import Union
 from chess import Board as cbo
 from chess import Pawn, Rook, Bishop, King, Queen, Knight, locate
+from chess import ai
 
 
 class ChessBoard():
     def __init__(self, size) -> None:
         self.size = size
+        self.mode = 0  # 0:p-b; 1:b-b; 2:p-p
         self.CellSize = self.size / 8
         self.Pieces = pygame.sprite.Group()
         self.whiteMove = True
@@ -19,6 +21,12 @@ class ChessBoard():
         self.checkSide = [False, False]
         self.additionalinfo = [[0, 0, 0], [0, 0, 0]]
         self.debug = False
+
+    def ChangeMode(self):
+        self.mode += 1
+        if self.mode > 3:
+            self.mode = 0
+        return self.mode
 
     def availableMoves(self, position):
         self.ConvertBoard()
@@ -36,6 +44,16 @@ class ChessBoard():
         if self.debug:
             print(pos_moves)
         return (pos_moves, all_moves)
+
+    def BestMove(self):
+        self.ConvertBoard()
+        ans = ai.minimax_with_pruning(self.ChessAIBoard, 10, 0 if self.whiteMove else 1)
+        if ans[1] is None:
+            return False
+        if ans[1].piece.position is None:
+            return False
+        else:
+            return ans
 
     def GeneratePieces(self, positions: str):
         """Based on `positions` recreates the board. `positions`  is string of length 64.
@@ -141,9 +159,15 @@ class ChessBoard():
             return True
         return False
 
-    def Move(self, startPos, endPos):
-        start = self.ConvertToAiPos(startPos[0], startPos[1])
-        end = self.ConvertToAiPos(endPos[0], endPos[1])
+    def Move(self, startPos, endPos, a_con=False):
+        if a_con:
+            start = startPos
+            end = endPos
+            startPos = self.ConvertToDisp(start)
+            endPos = self.ConvertToDisp(end)
+        else:
+            start = self.ConvertToAiPos(startPos[0], startPos[1])
+            end = self.ConvertToAiPos(endPos[0], endPos[1])
         ans = False
         self.ConvertBoard()
         piece1 = self.ChessAIBoard.get_piece(locate(start))
@@ -160,7 +184,7 @@ class ChessBoard():
             self.board[endPos[1]][endPos[0]] = self.board[startPos[1]][startPos[0]]
             self.board[startPos[1]][startPos[0]] = '-'
         if piece1.name == 'pawn':
-            if (endPos[1] == 8 and piece1.color == 1):
+            if (endPos[1] == 7 and piece1.color == 1):
                 self.board[endPos[1]][endPos[0]] = 'q'
             elif (endPos[1] == 0 and piece1.color == 0):
                 self.board[endPos[1]][endPos[0]] = 'Q'

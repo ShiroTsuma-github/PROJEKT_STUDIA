@@ -8,7 +8,7 @@ class Screen(ChessBoard):
     def __init__(self, size) -> None:
         super().__init__(size)
         self.size = size
-        self.truesize = size + size * 0.12
+        self.truesize = size + size * 0.22
         pygame.init()
         self.Positions = self.GeneratePositions()
         self.ColorMaster = Colors()
@@ -18,7 +18,7 @@ class Screen(ChessBoard):
             'WSIDE': self.ColorMaster.GetColor('green'),
             'BSIDE': self.ColorMaster.GetColor('blue'),
             'MARKS': self.ColorMaster.GetColor('black'),
-            'BACKGROUND': self.ColorMaster.GetColor('alice blue'),
+            'BACKGROUND': self.ColorMaster.GetColor("burly wood"),
             'TEXT': self.ColorMaster.GetColor('black'),
             'CHECK': self.ColorMaster.GetColor('red'),
             'CHECKM-B': self.ColorMaster.GetColor('light gray')
@@ -136,6 +136,14 @@ class Screen(ChessBoard):
                            self.CellSize * 0.1,
                            width=3)
 
+    def UpdatePosition(self, clicks, auto):
+        if self.Move(clicks[0], clicks[1], auto):
+            self.GeneratePieces(self.BoardToPos())
+            if self.debug:
+                print("Valid Move")
+                self.ConvertBoard()
+                print(self.ChessAIBoard)
+
     def run(self,
             starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR',
             whiteMove=True):
@@ -175,14 +183,16 @@ class Screen(ChessBoard):
                         for pos in moves:
                             self.DisplayAvailable(pos)
                 if len(clicks) == 2:
-                    if self.Move(clicks[0], clicks[1]):
-                        self.GeneratePieces(self.BoardToPos())
-                        if self.debug:
-                            print("Valid Move")
-                            self.ConvertBoard()
-                            print(self.ChessAIBoard)
+                    self.UpdatePosition(clicks, False)
                     clicks = []
                     self.update()
+            if self.mode == 0 and self.whiteMove is not True and whiteMove is True:
+                x = self.BestMove()
+                if x is False:
+                    self.checkmate = True
+                else:
+                    self.UpdatePosition((str(x[1].piece.position), str(x[1].position)), True)
+                self.update()
             self.clock.tick(60)
             pygame.display.flip()
 
