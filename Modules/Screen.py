@@ -157,7 +157,7 @@ class Screen(ChessBoard):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                    return False
+                    return (False, 1000, 0)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mousePos = pygame.mouse.get_pos()
                     mouseX = int(mousePos[0] // (self.size / 8))
@@ -167,7 +167,9 @@ class Screen(ChessBoard):
                         clicks = []
                     sqSelected = (mouseX, mouseY)
                     if mousePos[0] > self.size + 25 and mousePos[1] > self.size - 50:
-                        return True
+                        return (True, 1000, self.mode)
+                    if mousePos[0] > self.size + 25 and mousePos[1] < self.size - 50:
+                        return (True, 1000, self.ChangeMode())
                     if any([i >= 8 for i in sqSelected]):
                         sqSelected = ()
                     clicks.append(sqSelected) if sqSelected != () else 0

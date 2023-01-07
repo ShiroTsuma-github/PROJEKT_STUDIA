@@ -23,9 +23,7 @@ class ChessBoard():
         self.debug = False
 
     def ChangeMode(self):
-        self.mode += 1
-        if self.mode > 3:
-            self.mode = 0
+        self.mode = int(not bool(self.mode))
         return self.mode
 
     def availableMoves(self, position):

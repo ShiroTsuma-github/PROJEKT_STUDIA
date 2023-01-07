@@ -1,11 +1,13 @@
 from Modules.Screen import Screen
 # game.debug = False
 play = True
+mode = 0
+size = 1000
 while play:
-    game = Screen(1000)
+    game = Screen(size)
     game.debug = False
-    game.mode = 0
-    play = game.run(starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR', whiteMove=True)
+    game.mode = mode
+    play, size, mode = game.run(starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR', whiteMove=True)
 
 
 # TODO:
