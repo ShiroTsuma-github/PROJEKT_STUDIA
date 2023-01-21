@@ -1,0 +1,24 @@
+digraph "classes_chess" {
+rankdir=BT
+charset="utf-8"
+"chess.chess.Bishop" [color="black", fontcolor="black", label="{Bishop|char : str\lindex : int\lname : str\lpoints : int\l|is_valid(position, board)\lvalid_pos(board)\l}", shape="record", style="solid"];
+"chess.chess.Board" [color="black", fontcolor="black", label="{Board|board : list\ldebug : bool\len_passant : NoneType\lking_side_castle : list\lkings : list\lqueen_side_castle : list\l|add_piece(piece)\lcompute_score(color)\lcopy()\lget_moves(turn, heuristic)\lget_piece(position)\lin_check(color)\lis_consistent()\lmake_move(move)\lmove_piece(piece, position, ep, castle, promote)\lremove_piece(position)\l}", shape="record", style="solid"];
+"chess.game.Game" [color="black", fontcolor="black", label="{Game|board\l|}", shape="record", style="solid"];
+"chess.chess.King" [color="black", fontcolor="black", label="{King|char : str\lindex : int\lname : str\lpoints : int\l|is_valid(position, board)\lvalid_pos(board)\l}", shape="record", style="solid"];
+"chess.chess.Knight" [color="black", fontcolor="black", label="{Knight|char : str\lindex : int\lname : str\lpoints : int\l|is_valid(position, board)\lvalid_pos(board)\l}", shape="record", style="solid"];
+"chess.chess.Move" [color="black", fontcolor="black", label="{Move|castle : bool\lep : bool\lpiece\lposition\lpromote : NoneType\l|from_json(json)\l}", shape="record", style="solid"];
+"chess.utils.PriorityQueue.Node" [color="black", fontcolor="black", label="{Node|obj\lpriority\l|}", shape="record", style="solid"];
+"chess.chess.Pawn" [color="black", fontcolor="black", label="{Pawn|char : str\lindex : int\lname : str\lpoints : int\l|is_valid(position, board)\lvalid_pos(board)\l}", shape="record", style="solid"];
+"chess.chess.Piece" [color="black", fontcolor="black", label="{Piece|char : str\lcolor\lindex\lposition\luse_unicode : bool\l|from_json(json)\lget_unicode()\l}", shape="record", style="solid"];
+"chess.chess.Position" [color="black", fontcolor="black", label="{Position|col\lrow\l|in_range()\l}", shape="record", style="solid"];
+"chess.utils.PriorityQueue" [color="black", fontcolor="black", label="{PriorityQueue|pq : list\l|is_empty()\lpop()\lqueue(priority, node)\l}", shape="record", style="solid"];
+"chess.chess.Queen" [color="black", fontcolor="black", label="{Queen|char : str\lindex : int\lname : str\lpoints : int\l|is_valid(position, board)\lvalid_pos(board)\l}", shape="record", style="solid"];
+"chess.chess.Rook" [color="black", fontcolor="black", label="{Rook|char : str\lindex : int\lname : str\lpoints : int\l|is_valid(position, board)\lvalid_pos(board)\l}", shape="record", style="solid"];
+"chess.chess.Bishop" -> "chess.chess.Piece" [arrowhead="empty", arrowtail="none"];
+"chess.chess.King" -> "chess.chess.Piece" [arrowhead="empty", arrowtail="none"];
+"chess.chess.Knight" -> "chess.chess.Piece" [arrowhead="empty", arrowtail="none"];
+"chess.chess.Pawn" -> "chess.chess.Piece" [arrowhead="empty", arrowtail="none"];
+"chess.chess.Queen" -> "chess.chess.Piece" [arrowhead="empty", arrowtail="none"];
+"chess.chess.Rook" -> "chess.chess.Piece" [arrowhead="empty", arrowtail="none"];
+"chess.chess.Board" -> "chess.game.Game" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="board", style="solid"];
+}

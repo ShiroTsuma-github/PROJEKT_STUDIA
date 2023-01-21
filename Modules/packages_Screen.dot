@@ -1,0 +1,15 @@
+digraph "packages_Screen" {
+rankdir=BT
+charset="utf-8"
+"Modules" [color="black", label="Modules", shape="box", style="solid"];
+"Modules.ChessBoard" [color="black", label="Modules.ChessBoard", shape="box", style="solid"];
+"Modules.Colors" [color="black", label="Modules.Colors", shape="box", style="solid"];
+"Modules.ImageFix" [color="black", label="Modules.ImageFix", shape="box", style="solid"];
+"Modules.Piece" [color="black", label="Modules.Piece", shape="box", style="solid"];
+"Modules.Screen" [color="black", label="Modules.Screen", shape="box", style="solid"];
+"Modules.ChessBoard" -> "Modules.Piece" [arrowhead="open", arrowtail="none"];
+"Modules.Piece" -> "Modules.ImageFix" [arrowhead="open", arrowtail="none"];
+"Modules.Screen" -> "Modules.ChessBoard" [arrowhead="open", arrowtail="none"];
+"Modules.Screen" -> "Modules.Colors" [arrowhead="open", arrowtail="none"];
+"Modules.Screen" -> "Modules.ImageFix" [arrowhead="open", arrowtail="none"];
+}

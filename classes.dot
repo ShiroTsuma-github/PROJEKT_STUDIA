@@ -1,0 +1,5 @@
+digraph "classes" {
+rankdir=BT
+charset="utf-8"
+"Modules.ChessBoard.ChessBoard" [color="black", fontcolor="black", label="{ChessBoard|CellSize\lChessAIBoard\lMoveLog : list\lPieces\ladditionalinfo : list\lboard : list\lcheck : bool\lcheckSide : list\lcheckmate : bool\ldebug : bool\lmode : int\lsize\lwhiteMove : bool\l|BestMove()\lBoardToPos(): str\lChangeMode()\lConvertBoard()\lConvertToAiPos(posY, posX): str\lConvertToDisp(pos)\lGeneratePieces(positions: str)\lIndexOfPiece(piece: str): Union['tuple[int, int]', None]\lMove(startPos, endPos, a_con)\lScore()\lValidTurn(piece)\lavailableMoves(position)\l}", shape="record", style="solid"];
+}

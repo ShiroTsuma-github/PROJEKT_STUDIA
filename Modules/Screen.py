@@ -94,6 +94,13 @@ class Screen(ChessBoard):
         self.screen.blit(whitetextsurface, (self.size * 1.035, self.size * 0.85))
         self.screen.blit(blacktextsurface, (self.size * 1.035, self.size * 0.15))
 
+    def DisplayButtons(self):
+        text = pygame.font.SysFont('calibri', int(self.size * 23 / 500))
+        textsurface = text.render('Reset', True, self.objectcolors['TEXT'])
+        textsurface2 = text.render('AI-Player' if self.mode == 0 else '2-Player', True, self.objectcolors['TEXT'])
+        self.screen.blit(textsurface2, (self.size * 1.0 + 25, self.size * 0.7))
+        self.screen.blit(textsurface, (self.size * 1.0 + 45, self.size * 0.75))
+
     def DisplayCheck(self):
         p = None
         text = pygame.font.SysFont('calibri', int(self.size * 23 / 500))
@@ -157,7 +164,7 @@ class Screen(ChessBoard):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                    return (False, 1000, 0)
+                    return (False, self.size, 0)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mousePos = pygame.mouse.get_pos()
                     mouseX = int(mousePos[0] // (self.size / 8))
@@ -166,10 +173,14 @@ class Screen(ChessBoard):
                         sqSelected = ()
                         clicks = []
                     sqSelected = (mouseX, mouseY)
-                    if mousePos[0] > self.size + 25 and mousePos[1] > self.size - 50:
-                        return (True, 1000, self.mode)
-                    if mousePos[0] > self.size + 25 and mousePos[1] < self.size - 50:
-                        return (True, 1000, self.ChangeMode())
+                    if mousePos[0] > self.size + 5 and\
+                            mousePos[1] in range(int(self.size * 0.7), int(self.size * 0.75)):
+                        return (True, self.size, self.ChangeMode())
+                    if mousePos[0] > self.size + 5 and\
+                            mousePos[1] in range(int(self.size * 0.75), int(self.size * 0.8)):
+                        return (True, self.size, self.mode)
+                    #  self.size * 0.5
+                    #  self.size * 0.55
                     if any([i >= 8 for i in sqSelected]):
                         sqSelected = ()
                     clicks.append(sqSelected) if sqSelected != () else 0
@@ -207,6 +218,7 @@ class Screen(ChessBoard):
         self.Pieces.draw(self.screen)
         self.DisplayScore()
         self.DisplayCheck()
+        self.DisplayButtons()
         if self.checkmate:
             self.DisplayCheckMate()
         pygame.display.flip()

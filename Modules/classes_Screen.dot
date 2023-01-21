@@ -1,0 +1,14 @@
+digraph "classes_Screen" {
+rankdir=BT
+charset="utf-8"
+"Modules.ChessBoard.ChessBoard" [color="black", fontcolor="black", label="{ChessBoard|CellSize\lChessAIBoard\lMoveLog : list\lPieces\ladditionalinfo : list\lboard : list\lcheck : bool\lcheckSide : list\lcheckmate : bool\ldebug : bool\lmode : int\lsize\lwhiteMove : bool\l|BestMove()\lBoardToPos(): str\lChangeMode()\lConvertBoard()\lConvertToAiPos(posY, posX): str\lConvertToDisp(pos)\lGeneratePieces(positions: str)\lIndexOfPiece(piece: str): Union['tuple[int, int]', None]\lMove(startPos, endPos, a_con)\lScore()\lValidTurn(piece)\lavailableMoves(position)\l}", shape="record", style="solid"];
+"Modules.Colors.Colors" [color="black", fontcolor="black", label="{Colors|\l|ColoredText(text: str, text_color: Union[str, 'tuple[int, int, int]'], background_color: Union[str, 'tuple[int, int, int]'], debug: bool): str\lGetColor(name: str, rgb: bool): Union[str, 'tuple[int, int, int]']\lIsFullyCorrect(color: str, _type): bool\lRandomColor(rgb): Union[str, 'tuple[int, int, int]']\lToHex(color): str\lToRGB(_hex): \l}", shape="record", style="solid"];
+"Modules.ImageFix.ImageHandle" [color="black", fontcolor="black", label="{ImageHandle|image\lsurface\l|GetImage()\lGetSize()\lresize(scale): \l}", shape="record", style="solid"];
+"Modules.Piece.Piece" [color="black", fontcolor="black", label="{Piece|base\limage\lrect\l|Fix(imgpath, size)\l}", shape="record", style="solid"];
+"Modules.Screen.Screen" [color="black", fontcolor="black", label="{Screen|ColorMaster\lPositions : list\lbackground\lcheckmate : bool\lclock\lobjectcolors : dict\lscreen\lsize\ltruesize\lwhiteMove : bool\l|BoardMarks()\lCurrentSelect(coords)\lDisplayAvailable(position)\lDisplayCheck()\lDisplayCheckMate()\lDisplayScore()\lGeneratePositions(debug): \lUpdatePosition(clicks, auto)\lgetSize()\lrun(starting_seq, whiteMove)\lupdate()\l}", shape="record", style="solid"];
+"Modules.Colors.WrongInputType" [color="black", fontcolor="red", label="{WrongInputType|error\lmessage : str\l|}", shape="record", style="solid"];
+"Modules.Screen.Screen" -> "Modules.ChessBoard.ChessBoard" [arrowhead="empty", arrowtail="none"];
+"Modules.Colors.Colors" -> "Modules.Screen.Screen" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="ColorMaster", style="solid"];
+"Modules.ImageFix.ImageHandle" -> "Modules.Piece.Piece" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="base", style="solid"];
+"Modules.ImageFix.ImageHandle" -> "Modules.Screen.Screen" [arrowhead="diamond", arrowtail="none", fontcolor="green", label="background", style="solid"];
+}

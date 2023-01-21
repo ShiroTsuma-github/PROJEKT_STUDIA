@@ -1,9 +1,9 @@
 from .Piece import Piece
 import pygame
 from typing import Union
-from chess import Board as cbo
-from chess import Pawn, Rook, Bishop, King, Queen, Knight, locate
-from chess import ai
+from .chess.chess import Board as cbo
+from .chess.chess import Pawn, Rook, Bishop, King, Queen, Knight, locate
+from .chess import ai
 
 
 class ChessBoard():

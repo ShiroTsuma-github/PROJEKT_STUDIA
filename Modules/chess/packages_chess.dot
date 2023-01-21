@@ -1,0 +1,13 @@
+digraph "packages_chess" {
+rankdir=BT
+charset="utf-8"
+"chess" [color="black", label="chess", shape="box", style="solid"];
+"chess.ai" [color="black", label="chess.ai", shape="box", style="solid"];
+"chess.chess" [color="black", label="chess.chess", shape="box", style="solid"];
+"chess.game" [color="black", label="chess.game", shape="box", style="solid"];
+"chess.heuristic" [color="black", label="chess.heuristic", shape="box", style="solid"];
+"chess.utils" [color="black", label="chess.utils", shape="box", style="solid"];
+"chess" -> "chess.chess" [arrowhead="open", arrowtail="none"];
+"chess.ai" -> "chess.chess" [arrowhead="open", arrowtail="none"];
+"chess.game" -> "chess.chess" [arrowhead="open", arrowtail="none"];
+}
