@@ -191,18 +191,3 @@ class ChessBoard():
         self.checkSide[1] = self.ChessAIBoard.in_check(1)
         self.check = any(self.checkSide)
         return ans
-
-"""
-    >>> bishop = board.get_piece(locate("c1"))
-    >>> bishop.position
-    c1
-    >>> bishop.name
-    'bishop'
-    >>> bishop = board.move_piece(bishop, locate("f6"))
-    >>> bishop.position
-    f6
-    >>> board.get_piece(locate("f6")) is bishop
-    True
-    >>> board.get_piece(locate("c1")) is None
-    True
-"""

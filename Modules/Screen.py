@@ -179,8 +179,6 @@ class Screen(ChessBoard):
                     if mousePos[0] > self.size + 5 and\
                             mousePos[1] in range(int(self.size * 0.75), int(self.size * 0.8)):
                         return (True, self.size, self.mode)
-                    #  self.size * 0.5
-                    #  self.size * 0.55
                     if any([i >= 8 for i in sqSelected]):
                         sqSelected = ()
                     clicks.append(sqSelected) if sqSelected != () else 0
