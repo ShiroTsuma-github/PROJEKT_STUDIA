@@ -14,7 +14,7 @@ class ChessBoard():
         self.Pieces = pygame.sprite.Group()
         self.whiteMove = True
         self.whiteStart = True
-        self.MoveLog = []
+        self.seq = 'rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR'
         self.board = []
         self.ChessAIBoard = cbo(empty=True)
         self.check = False
@@ -26,6 +26,17 @@ class ChessBoard():
     def ChangeMode(self):
         self.mode = int(not bool(self.mode))
         return self.mode
+
+    def ChangeSeq(self):
+        seq_table = [
+            'rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR',
+            '----k---pppppppp--------------------------------PPPPPPPP----K---',
+            'rnbqkbnr------------------------------------------------RNBQKBNR',
+            'nnnnknnnpppppppp--------------------------------PPPPPPPPNNNNKNNN'
+        ]
+        temp = seq_table.index(self.seq)
+        self.seq = seq_table[temp + 1 if temp + 1 <= len(seq_table)-1 else 0]
+        return self.seq
 
     def availableMoves(self, position):
         self.ConvertBoard()

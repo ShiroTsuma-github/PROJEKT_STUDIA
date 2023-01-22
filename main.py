@@ -3,13 +3,14 @@ play = True
 mode = 0
 size = 800
 move = True
+seq = 'rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR'
 while play:
     game = Screen(size)
     game.debug = False
     game.mode = mode
     game.whiteStart = move
-    play, size, mode, move = game.run(
-        starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR',)
+    game.seq = seq
+    play, size, mode, move, seq = game.run()
 
 
 # TODO:

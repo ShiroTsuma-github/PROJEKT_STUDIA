@@ -10,6 +10,8 @@ class Screen(ChessBoard):
         self.size = size
         self.truesize = size + size * 0.22
         pygame.init()
+        pygame.display.set_caption('Szachy - Tomasz Góralski')
+        pygame.display.set_icon(ImageHandle('images\\chessIcon.ico').GetImage())
         self.Positions = self.GeneratePositions()
         self.ColorMaster = Colors()
         self.objectcolors = {
@@ -99,6 +101,8 @@ class Screen(ChessBoard):
         textsurface = text.render('Reset', True, self.objectcolors['TEXT'])
         textsurface2 = text.render('AI-Player' if self.mode == 0 else '2-Player', True, self.objectcolors['TEXT'])
         textsurface3 = text.render('Start-W' if self.whiteStart is True else 'Start-B', True, self.objectcolors['TEXT'])
+        textsurface4 = text.render('CH-Mode', True, self.objectcolors['TEXT'])
+        self.screen.blit(textsurface4, (self.size * 1.0 + 25, self.size * 0.65))
         self.screen.blit(textsurface2, (self.size * 1.0 + 25, self.size * 0.7))
         self.screen.blit(textsurface, (self.size * 1.0 + 45, self.size * 0.75))
         self.screen.blit(textsurface3, (self.size * 1.0 + 35, self.size * 0.8))
@@ -153,9 +157,8 @@ class Screen(ChessBoard):
                 self.ConvertBoard()
                 print(self.ChessAIBoard)
 
-    def run(self,
-            starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR'):
-        self.GeneratePieces(starting_seq)
+    def run(self):
+        self.GeneratePieces(self.seq)
         self.update()
         self.whiteMove = self.whiteStart
         run = True
@@ -165,7 +168,7 @@ class Screen(ChessBoard):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                    return (False, self.size, 0, self.whiteStart)
+                    return (False, self.size, 0, self.whiteStart, self.seq)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mousePos = pygame.mouse.get_pos()
                     mouseX = int(mousePos[0] // (self.size / 8))
@@ -175,14 +178,17 @@ class Screen(ChessBoard):
                         clicks = []
                     sqSelected = (mouseX, mouseY)
                     if mousePos[0] > self.size + 5 and\
+                            mousePos[1] in range(int(self.size * 0.65), int(self.size * 0.7)):
+                        return (True, self.size, self.mode, self.whiteStart, self.ChangeSeq())
+                    elif mousePos[0] > self.size + 5 and\
                             mousePos[1] in range(int(self.size * 0.7), int(self.size * 0.75)):
-                        return (True, self.size, self.ChangeMode(), self.whiteStart)
-                    if mousePos[0] > self.size + 5 and\
+                        return (True, self.size, self.ChangeMode(), self.whiteStart, self.seq)
+                    elif mousePos[0] > self.size + 5 and\
                             mousePos[1] in range(int(self.size * 0.75), int(self.size * 0.8)):
-                        return (True, self.size, self.mode, self.whiteStart)
-                    if mousePos[0] > self.size + 5 and\
+                        return (True, self.size, self.mode, self.whiteStart, self.seq)
+                    elif mousePos[0] > self.size + 5 and\
                             mousePos[1] in range(int(self.size * 0.8), int(self.size * 0.85)):
-                        return (True, self.size, self.mode, not self.whiteStart)
+                        return (True, self.size, self.mode, not self.whiteStart, self.seq)
                     if any([i >= 8 for i in sqSelected]):
                         sqSelected = ()
                     clicks.append(sqSelected) if sqSelected != () else 0
