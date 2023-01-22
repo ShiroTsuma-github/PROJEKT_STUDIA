@@ -98,8 +98,10 @@ class Screen(ChessBoard):
         text = pygame.font.SysFont('calibri', int(self.size * 23 / 500))
         textsurface = text.render('Reset', True, self.objectcolors['TEXT'])
         textsurface2 = text.render('AI-Player' if self.mode == 0 else '2-Player', True, self.objectcolors['TEXT'])
+        textsurface3 = text.render('Start-W' if self.whiteStart is True else 'Start-B', True, self.objectcolors['TEXT'])
         self.screen.blit(textsurface2, (self.size * 1.0 + 25, self.size * 0.7))
         self.screen.blit(textsurface, (self.size * 1.0 + 45, self.size * 0.75))
+        self.screen.blit(textsurface3, (self.size * 1.0 + 35, self.size * 0.8))
 
     def DisplayCheck(self):
         p = None
@@ -152,11 +154,10 @@ class Screen(ChessBoard):
                 print(self.ChessAIBoard)
 
     def run(self,
-            starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR',
-            whiteMove=True):
+            starting_seq='rnbqkbnrpppppppp--------------------------------PPPPPPPPRNBQKBNR'):
         self.GeneratePieces(starting_seq)
         self.update()
-        self.whiteMove = whiteMove
+        self.whiteMove = self.whiteStart
         run = True
         sqSelected = ()
         clicks = []
@@ -164,7 +165,7 @@ class Screen(ChessBoard):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                    return (False, self.size, 0)
+                    return (False, self.size, 0, self.whiteStart)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mousePos = pygame.mouse.get_pos()
                     mouseX = int(mousePos[0] // (self.size / 8))
@@ -175,10 +176,13 @@ class Screen(ChessBoard):
                     sqSelected = (mouseX, mouseY)
                     if mousePos[0] > self.size + 5 and\
                             mousePos[1] in range(int(self.size * 0.7), int(self.size * 0.75)):
-                        return (True, self.size, self.ChangeMode())
+                        return (True, self.size, self.ChangeMode(), self.whiteStart)
                     if mousePos[0] > self.size + 5 and\
                             mousePos[1] in range(int(self.size * 0.75), int(self.size * 0.8)):
-                        return (True, self.size, self.mode)
+                        return (True, self.size, self.mode, self.whiteStart)
+                    if mousePos[0] > self.size + 5 and\
+                            mousePos[1] in range(int(self.size * 0.8), int(self.size * 0.85)):
+                        return (True, self.size, self.mode, not self.whiteStart)
                     if any([i >= 8 for i in sqSelected]):
                         sqSelected = ()
                     clicks.append(sqSelected) if sqSelected != () else 0
@@ -197,7 +201,7 @@ class Screen(ChessBoard):
                     self.UpdatePosition(clicks, False)
                     clicks = []
                     self.update()
-            if self.mode == 0 and self.whiteMove is not True and whiteMove is True:
+            if self.mode == 0 and self.whiteMove is not True:
                 x = self.BestMove()
                 if x is False:
                     self.checkmate = True

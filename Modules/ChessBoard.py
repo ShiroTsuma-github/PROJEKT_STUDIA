@@ -13,6 +13,7 @@ class ChessBoard():
         self.CellSize = self.size / 8
         self.Pieces = pygame.sprite.Group()
         self.whiteMove = True
+        self.whiteStart = True
         self.MoveLog = []
         self.board = []
         self.ChessAIBoard = cbo(empty=True)
